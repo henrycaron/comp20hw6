@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Jade Delight</title>
+	<style type="text/css">
+	body {
+	  margin: 0;
+	  font-family: Arial, Helvetica, sans-serif;
+	}
+	.container {
+		border-radius: 5px;
+		background-color: #f2f2f2;
+		padding: 20px;
+		margin: auto;
+		width: 50%;
+		margin-top: 20px;
+	}
+	.checkmark {
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  height: 25px;
+	  width: 25px;
+	  background-color: #eee;
+	  border-radius: 50%;
+	}
+	input[type=button], input[type=submit]{
+	  background-color: #0E0A5B;
+	  border-radius: 2px;
+	  color: white;
+	  padding: 8px 8px;
+	  text-decoration: none;
+	  margin: 4px 2px;
+	  cursor: pointer;
+	}
+
+	select {
+	  width: 100%;
+	  padding: 16px 20px;
+	  border: none;
+	  border-radius: 4px;
+	  background-color: #ffffff;
+	}
+	input[type=text] {
+	  margins: auto;
+	  width: 100%;
+	  padding: 12px 20px;
+	  margin: 8px 0;
+	  box-sizing: border-box;
+	}
+	</style>
+</head>
+
+<body>
+<script language="javascript">
+
+function MenuItem(name, cost)
+{
+	this.name = name;
+	this.cost=cost;
+}
+
+menuItems = new Array(
+	new MenuItem("Chicken Chop Suey", 4.5),
+	new MenuItem("Sweet and Sour Pork", 6.25),
+	new MenuItem("Shrimp Lo Mein", 5.25),
+	new MenuItem("Moo Shi Chicken", 6.5),
+	new MenuItem("Fried Rice", 2.35)
+);
+	
+function update(){
+	var subtotal = 0;
+	for(var i = 0; i < 5; i++){
+		var quan = document.getElementsByName("quan" + i)[0].value;
+		var subsubtotal = parseFloat(menuItems[i].cost) * parseInt(quan);
+		subtotal += subsubtotal;
+		if(subsubtotal != 0)
+			document.getElementsByName("cost")[i].value = "$" + subsubtotal.toFixed(2);
+	}
+	document.getElementById("subtotal").value = "$" + subtotal.toFixed(2);
+	document.getElementById("tax").value = "$" + (subtotal * 0.0625).toFixed(2);
+	document.getElementById("total").value = "$" + (subtotal * 1.0625).toFixed(2);
+}
+
+function phonenumber(inputtxt)
+{
+  var phoneno =  /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+  if((inputtxt.match(phoneno)))
+        {
+      return true;
+        }
+      else
+        {
+        return false;
+        }
+}
+
+function get_time(add){
+	var time = new Date();
+	var hour = time.getHours();
+	var minute = time.getMinutes() + add;
+	if(minute > 59)
+		hour = (hour + 1) % 12;
+	if(hour == 0){
+		hour = 12;
+	}
+	minute = minute % 60;
+	return hour + ":" + ('0' + minute).slice(-2);	
+}
+function validate(){
+	
+	if(!document.getElementsByName("lname")[0].value){
+		alert("Please enter your last name");
+		return false;
+	}
+	
+	phone = document.getElementsByName("phone")[0].value;
+	if(!phonenumber(phone)){
+		alert("Please enter a valid phone number");
+		return false;
+	}
+	
+	if(document.getElementById('pickup').checked){
+		var time = get_time(15);
+		var p_or_d = "pickup";
+	}
+	else{
+		console.log("delivery");
+		var time = get_time(30);
+		var p_or_d = "delivery";
+		if(!document.getElementsByName("street")[0].value){
+			alert("Please enter your street");
+			return false;
+		}
+		if(!document.getElementsByName("city")[0].value){
+			alert("Please enter your city");
+			return false;
+		}
+	}
+	if(!document.getElementById("total").value){
+			alert("Place an order to submit");
+			return false;
+		}
+	alert("Thank you for your order! your total is " + document.getElementById("total").value + " and your " + p_or_d + " time is " + time);
+	return false;
+}
+
+function makeSelect(name, minRange, maxRange)
+{
+	var t= "";
+	t = "<select name='" + name + "' size='1' onchange ='update()'>";
+	for (j=minRange; j<=maxRange; j++)
+	   t += "<option>" + j + "</option>";
+	t+= "</select>"; 
+	console.log(t)
+	return t;
+}
+</script>
+
+<div class = "container">
+<h1 style = "margin:">Jade Delight Order Form</h1>
+<form onsubmit = "return validate()">
+
+<p>First Name: <input type="text"  name='fname' /></p>
+<p>Last Name*:  <input type="text"  name='lname' /></p>
+<p>Street: <input type="text"  name='street' /></p>
+<p>City: <input type="text"  name='city' /></p>
+<p>Phone*: <input type="text"  name='phone' /></p>
+<p> 
+	<div> </div>
+	<input type="radio"  name="p_or_d" id = 'pickup' checked="checked"/>Pickup  
+	<input type="radio"  name='p_or_d' id = 'delivery'/>
+	Delivery
+</p>
+<table border="0" cellpadding="3" id = "menu">
+  <tr>
+    <th>Select Item</th>
+    <th>Item Name</th>
+    <th>Cost Each</th>
+    <th>Total Cost</th>
+  </tr>
+<script language="javascript">
+
+  var s = "";
+  for (i=0; i< menuItems.length; i++)
+  {
+	  s += "<tr><td>";
+	  s += makeSelect("quan" + i, 0, 10);
+	  s += "</td><td>" + menuItems[i].name + "</td>";
+	  s += "<td> $" + menuItems[i].cost.toFixed(2) + "</td>";
+	  s += "<td><input type='text' name='cost'/></td></tr>";
+  }
+  document.writeln(s);
+</script>
+</table>
+<p>Subtotal: 
+   <input type="text"  name='subtotal' id="subtotal" />
+</p>
+<p>Mass tax 6.25%:
+  <input type="text"  name='tax' id="tax" />
+</p>
+<p>Total: <input type="text"  name='total' id="total" />
+</p>
+
+<input type = "submit" value = "Submit Order" />
+
+</form>
+</div>
+</body>
+</html>
